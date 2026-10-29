@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POMPO AI // Focus Companion for Mac & Windows</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            // Updated color palette from extracted palette image
+            'paper-clean': '#FFFFFF',
+            'paper-off': '#F4F5F7',
+            'paper-dark': '#E2E5EB',
+            'slate-blue': '#525D6E',
+            'ink': '#1B1C22',
+            'peach-sand': '#EBCBB5',
+            'warm-terracotta': '#B68070',
+            
+            /* Theme mapping aliases */
+            paper: '#F4F5F7',
+            'paper-bright': '#FFFFFF',
+            pencil: '#525D6E',
+            highlight: '#EBCBB5',
+            coral: '#B68070',
+            graph: '#525D6E',
+            mint: '#EBCBB5',
+            kraft: '#B68070',
+            stamp: '#B68070',
+          },
+          fontFamily: {
+            hand: ['Caveat', 'cursive'],
+            mono: ['"Courier Prime"', 'monospace'],
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['"Space Grotesk"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Paper & Craft Texture Backgrounds using new palette */
+    body {
+      background-color: #F4F5F7;
+      background-image: 
+        radial-gradient(#525D6E 1px, transparent 1px),
+        radial-gradient(#525D6E 1px, #F4F5F7 1px);
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+      color: #1B1C22;
+      overflow-x: hidden;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Graph Paper Pattern */
+    .bg-graph-paper {
+      background-size: 20px 20px;
+      background-image:
+        linear-gradient(to right, rgba(82, 93, 110, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(82, 93, 110, 0.15) 1px, transparent 1px);
+      background-color: #FFFFFF;
+    }
+
+    /* Lined Notebook Paper */
+    .bg-lined-paper {
+      background-color: #FFFFFF;
+      background-image: linear-gradient(#E2E5EB 1px, transparent 1px);
+      background-size: 100% 28px;
+    }
+
+    /* Corkboard texture using terracotta and peach palette */
+    .bg-cork {
+      background-color: #EBCBB5;
+      background-image: radial-gradient(#B68070 1px, transparent 1px), radial-gradient(#525D6E 1px, #EBCBB5 1px);
+      background-size: 16px 16px;
+      background-position: 0 0, 8px 8px;
+    }
+
+    /* Torn Paper Edge CSS Clip Paths */
+    .torn-edge-bottom {
+      filter: drop-shadow(0 6px 8px rgba(0,0,0,0.08));
+      clip-path: polygon(
+        0% 0%, 100% 0%, 100% 93%, 
+        97% 96%, 94% 91%, 90% 97%, 86% 92%, 82% 96%, 77% 91%, 73% 97%, 68% 92%, 64% 96%, 
+        59% 91%, 55% 96%, 50% 91%, 45% 97%, 40% 92%, 36% 96%, 31% 91%, 27% 97%, 22% 92%, 
+        18% 96%, 13% 91%, 8% 96%, 4% 91%, 0% 97%
+      );
+    }
+
+    /* Tactile Drop Shadows */
+    .paper-shadow {
+      box-shadow: 6px 6px 0px #1B1C22, 12px 12px 20px rgba(27, 28, 34, 0.12);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    }
+    
+    .paper-shadow-sm {
+      box-shadow: 3px 3px 0px #1B1C22;
+    }
+
+    .paper-shadow-lg {
+      box-shadow: 10px 10px 0px #1B1C22, 20px 20px 30px rgba(27, 28, 34, 0.15);
+    }
+
+    .paper-shadow:hover {
+      transform: translateY(-4px) rotate(-0.5deg);
+      box-shadow: 10px 10px 0px #1B1C22, 18px 18px 25px rgba(27, 28, 34, 0.15);
+    }
+
+    /* Washi / Tape Simulation using custom palette */
+    .tape-strip {
+      background: rgba(235, 203, 181, 0.85);
+      border-left: 2px dashed rgba(182, 128, 112, 0.4);
+      border-right: 2px dashed rgba(182, 128, 112, 0.4);
+      backdrop-filter: blur(2px);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .tape-blue {
+      background: rgba(82, 93, 110, 0.35);
+      border-left: 2px dashed rgba(27, 28, 34, 0.3);
+      border-right: 2px dashed rgba(27, 28, 34, 0.3);
+    }
+
+    /* Rubber Stamp Effect */
+    .stamp-badge {
+      border: 3px dashed #B68070;
+      color: #B68070;
+      transform: rotate(-12deg);
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 0px rgba(182, 128, 112, 0.2);
+    }
+
+    /* Tactile Button Press */
+    .btn-tactile {
+      transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-tactile:active {
+      transform: translate(3px, 3px) !important;
+      box-shadow: 1px 1px 0px #1B1C22 !important;
+    }
+
+    /* Draggable Item Style */
+    .draggable-item {
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+    }
+    .draggable-item:active {
+      cursor: grabbing;
+      z-index: 100 !important;
+    }
+
+    .pixel-art {
+      image-rendering: pixelated;
+    }
+
+    /* SCROLL ANIMATIONS (Reveal on Scroll) */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(30px) rotate(-1deg);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0) rotate(0deg);
+    }
+
+    .character-strip {
+      scrollbar-color: #525D6E #E2E5EB;
+      scrollbar-width: thin;
+    }
+  </style>
+</head>
+<body class="relative min-h-screen pb-16 selection:bg-peach-sand selection:text-ink">
+
+  <!-- MOBILE ONLY NOTICE MODAL -->
+  <div id="mobile-notice-modal" class="fixed inset-0 bg-ink/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden md:hidden">
+    <div class="bg-lined-paper border-4 border-ink p-6 paper-shadow relative transform rotate-1 max-w-sm w-full">
+      <div class="w-24 h-6 tape-strip absolute -top-3 left-1/2 -translate-x-1/2"></div>
+      
+      <div class="flex items-center gap-3 border-b-2 border-ink pb-3 mb-4">
+        <div class="w-10 h-10 bg-warm-terracotta text-white flex items-center justify-center border-2 border-ink font-bold">
+          <i data-lucide="monitor" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-mono text-[10px] font-bold text-slate-blue block uppercase">DESKTOP SOFTWARE</span>
+          <h3 class="font-serif font-black text-xl text-ink leading-tight">POMPO AI is built for PC & Mac</h3>
+        </div>
+      </div>
+
+      <p class="font-mono text-xs text-slate-blue leading-relaxed mb-5">
+        POMPO AI is a desktop focus companion for macOS (.dmg) and Windows (.exe). Visit on your computer to download the app.
+      </p>
+
+      <div class="space-y-3">
+        <button onclick="dismissMobileNotice()" class="btn-tactile w-full bg-slate-blue text-white font-mono font-bold text-xs py-3 border-2 border-ink paper-shadow-sm">
+          VIEW WEBSITE ANYWAY
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP HEADER / ANALOG BOARD NAVBAR -->
+  <header class="sticky top-0 z-40 px-4 py-3 bg-paper-dark border-b-4 border-ink">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Logo Container & Name -->
+      <a href="#" class="flex items-center gap-3 group">
+        <!-- Logo Display Box with logo.png & Fallback -->
+        <div class="w-11 h-11 bg-paper-bright border-2 border-ink paper-shadow-sm flex items-center justify-center overflow-hidden p-1 group-hover:rotate-6 transition-transform">
+          <img src="logo.png" alt="POMPO AI Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'font-serif font-black text-2xl text-warm-terracotta\'>P</span>';">
+        </div>
+        <div>
+          <span class="font-serif font-black text-3xl tracking-tight block leading-none text-ink">POMPO AI</span>
+          <span class="font-mono text-[10px] uppercase tracking-widest text-slate-blue font-bold">AI Focus Companion // Mac & Win</span>
+        </div>
+      </a>
+
+      <!-- Navigation Sticky Clips -->
+      <nav class="hidden md:flex items-center gap-6 font-mono text-sm font-bold">
+        <a href="#about" class="hover:underline decoration-wavy decoration-warm-terracotta flex items-center gap-1">
+          <i data-lucide="bookmark" class="w-4 h-4 text-slate-blue"></i> About POMPO AI
+        </a>
+        <a href="#screenshots" class="hover:underline decoration-wavy decoration-slate-blue flex items-center gap-1">
+          <i data-lucide="image" class="w-4 h-4 text-slate-blue"></i> See It In Action
+        </a>
+        <a href="#characters" class="hover:underline decoration-wavy decoration-warm-terracotta flex items-center gap-1">
+          <i data-lucide="gamepad-2" class="w-4 h-4 text-slate-blue"></i> Study Pets
+        </a>
+        <a href="#features" class="hover:underline decoration-wavy decoration-peach-sand flex items-center gap-1">
+          <i data-lucide="check-square" class="w-4 h-4 text-slate-blue"></i> Features
+        </a>
+        <a href="#downloads" class="hover:underline decoration-wavy decoration-warm-terracotta flex items-center gap-1">
+          <i data-lucide="download" class="w-4 h-4 text-slate-blue"></i> Download (.dmg/.exe)
+        </a>
+      </nav>
+
+      <!-- CTA Download Button Header -->
+      <div class="flex items-center gap-3">
+        <a href="#downloads" class="btn-tactile bg-peach-sand text-ink font-mono font-bold text-xs uppercase px-4 py-2 border-2 border-ink paper-shadow-sm flex items-center gap-2">
+          <i data-lucide="arrow-down-circle" class="w-4 h-4 text-warm-terracotta"></i>
+          <span>Get Free App</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 pt-8 space-y-20 relative">
+
+    <!-- DRAGGABLE STICKERS OVERLAY -->
+    <div id="sticker-container" class="absolute inset-0 pointer-events-none z-30">
+      <div class="draggable-item pointer-events-auto absolute top-8 right-6 md:right-16 bg-peach-sand text-ink px-3 py-1 font-hand text-xl font-bold border-2 border-ink paper-shadow-sm transform rotate-6">
+        📌 25 min work // 5 min break
+      </div>
+      <div class="draggable-item pointer-events-auto absolute top-[520px] left-4 md:left-8 bg-paper-bright text-ink p-2 font-mono text-xs font-bold border-2 border-ink paper-shadow-sm transform -rotate-6">
+        <span class="text-warm-terracotta">★ FOCUS, NOT YOUR FILES ★</span><br>
+        On-device AI nudges
+      </div>
+    </div>
+
+    <!-- HERO SECTION (CLEAN SINGLE-COLUMN LAYOUT WITHOUT EXTRA LOGO SLIDE) -->
+    <section id="about" class="relative scroll-reveal">
+      
+      <!-- Top Washi Tape -->
+      <div class="w-36 h-8 tape-strip absolute -top-4 left-1/2 -translate-x-1/2 z-20 transform -rotate-1"></div>
+
+      <div class="bg-lined-paper p-6 md:p-12 border-4 border-ink paper-shadow relative torn-edge-bottom max-w-5xl mx-auto">
+        
+        <!-- Binder Ring Holes -->
+        <div class="absolute left-2 top-10 bottom-10 flex flex-col justify-between pointer-events-none">
+          <div class="w-3.5 h-3.5 bg-ink rounded-full"></div>
+          <div class="w-3.5 h-3.5 bg-ink rounded-full"></div>
+          <div class="w-3.5 h-3.5 bg-ink rounded-full"></div>
+          <div class="w-3.5 h-3.5 bg-ink rounded-full"></div>
+        </div>
+
+        <div class="pl-4 md:pl-8">
+          <div class="flex flex-wrap items-center gap-3 mb-4">
+            <div class="inline-block bg-peach-sand text-ink font-mono font-bold text-xs px-3 py-1 border border-ink transform -rotate-1">
+              AI-POWERED DESKTOP FOCUS COMPANION
+            </div>
+            <div class="stamp-badge px-3 py-0.5 text-[10px] uppercase font-mono">
+              v2.4 STABLE
+            </div>
+          </div>
+
+          <h1 class="font-serif text-4xl md:text-6xl font-black tracking-tight leading-tight mb-6 text-ink">
+            Meet <span class="underline decoration-warm-terracotta decoration-4">POMPO AI</span>: your focus, under friendly watch.
+          </h1>
+
+          <p class="font-mono text-base leading-relaxed text-slate-blue mb-8 max-w-3xl">
+            <strong class="text-ink">POMPO AI</strong> is your desktop focus companion. Its on-device AI watches for signs that your attention has wandered and gives you a gentle nudge in real time. Your focus analysis stays on your device.
+          </p>
+
+          <!-- Quick Specs Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs font-bold border-t-2 border-b-2 border-dashed border-slate-blue/30 py-5 mb-8">
+            <div class="flex items-center gap-2">
+              <i data-lucide="apple" class="w-4 h-4 text-warm-terracotta"></i>
+              <span>macOS (.dmg)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="monitor" class="w-4 h-4 text-slate-blue"></i>
+              <span>Windows (.exe)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-warm-terracotta"></i>
+              <span>On-device AI</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="zap" class="w-4 h-4 text-slate-blue"></i>
+              <span>Real-time focus nudges</span>
+            </div>
+          </div>
+
+          <!-- Hero Action Buttons -->
+          <div class="flex flex-wrap gap-4 items-center">
+            <a href="#downloads" class="btn-tactile bg-ink text-paper-bright font-mono font-bold text-sm px-6 py-4 border-2 border-ink paper-shadow-sm flex items-center gap-2 hover:bg-slate-blue">
+              <i data-lucide="download" class="w-5 h-5 text-peach-sand"></i>
+              <span>Get POMPO AI</span>
+            </a>
+            <a href="#screenshots" class="btn-tactile bg-paper-bright text-ink font-mono font-bold text-sm px-6 py-4 border-2 border-ink paper-shadow-sm hover:bg-paper-dark flex items-center gap-2">
+              <i data-lucide="eye" class="w-4 h-4 text-slate-blue"></i>
+              <span>Explore Screenshots</span>
+            </a>
+          </div>
+
+          <!-- Handwritten Annotation -->
+          <div class="mt-8 font-hand text-2xl text-slate-blue transform -rotate-1 flex items-center gap-2">
+            <span>⤷ A softer nudge back to what matters.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREENSHOTS SHOWCASE SECTION (POLAROIDS & PINS ON CORKBOARD) -->
+    <section id="screenshots" class="relative scroll-reveal">
+      
+      <div class="mb-8 text-center relative inline-block left-1/2 -translate-x-1/2">
+        <div class="bg-peach-sand px-6 py-2 border-3 border-ink paper-shadow transform rotate-1 inline-block">
+          <h2 class="font-serif font-black text-3xl md:text-4xl text-ink">POMPO AI IN ACTION</h2>
+        </div>
+        <p class="font-mono text-xs uppercase tracking-widest text-slate-blue mt-2 font-bold">
+          [ Real-time focus tools // pinned to your desk ]
+        </p>
+      </div>
+
+      <!-- Corkboard Canvas Area -->
+      <div class="bg-cork p-6 md:p-10 border-4 border-ink paper-shadow-lg relative rounded-sm">
+        
+        <!-- Pushpins overlay aesthetics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+
+          <!-- Screenshot 1: Polaroid Frame -->
+          <div class="bg-paper-bright p-4 border-2 border-ink paper-shadow transform -rotate-2 hover:rotate-0 transition-transform relative group">
+            <!-- Pushpin -->
+            <div class="w-4 h-4 bg-warm-terracotta rounded-full border border-ink absolute -top-2 left-1/2 -translate-x-1/2 shadow z-10"></div>
+            
+            <div class="aspect-video bg-paper border-2 border-ink overflow-hidden relative mb-3">
+              <img 
+                src="mockup.png" 
+                alt="POMPO AI detects attention cues and marks them in real time" 
+                class="w-full h-full object-cover"
+                onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full bg-graph-paper p-4 flex flex-col items-center justify-center text-center font-mono text-xs text-slate-blue\'><i data-lucide=\'scan-eye\' class=\'w-8 h-8 text-warm-terracotta mb-2\'></i><span class=\'font-bold text-ink\'>POMPO AI FOCUS GUARDIAN</span><span>Live, on-device attention cues</span></div>';"
+              />
+            </div>
+            <div class="font-hand text-2xl font-bold text-ink text-center">
+              1. POMPO AI Focus Guardian
+            </div>
+            <p class="font-mono text-[11px] text-slate-blue text-center mt-1">
+              Real-time attention cues, analyzed on your device.
+            </p>
+          </div>
+
+          <!-- Screenshot 2: Polaroid Frame -->
+          <div class="bg-paper-bright p-4 border-2 border-ink paper-shadow transform rotate-2 hover:rotate-0 transition-transform relative group">
+            <!-- Washi Tape -->
+            <div class="w-24 h-6 tape-strip absolute -top-3 left-1/2 -translate-x-1/2 z-10"></div>
+
+            <div class="aspect-video bg-paper border-2 border-ink overflow-hidden relative mb-3">
+              <img 
+                src="mockup2.png" 
+                alt="POMPO AI desktop study pet beside a focus timer" 
+                class="w-full h-full object-cover"
+                onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full bg-lined-paper p-4 flex flex-col items-center justify-center text-center font-mono text-xs text-slate-blue\'><i data-lucide=\'gamepad-2\' class=\'w-8 h-8 text-warm-terracotta mb-2\'></i><span class=\'font-bold text-ink\'>STUDY PETS</span><span>Pick a pixel-art character</span></div>';"
+              />
+            </div>
+            <div class="font-hand text-2xl font-bold text-ink text-center">
+              2. A Study Pet With Opinions
+            </div>
+            <p class="font-mono text-[11px] text-slate-blue text-center mt-1">
+              Drag your historical parody character anywhere on your desktop.
+            </p>
+          </div>
+
+          <!-- Screenshot 3: Polaroid Frame -->
+          <div class="bg-paper-bright p-4 border-2 border-ink paper-shadow transform -rotate-1 hover:rotate-0 transition-transform relative group">
+            <!-- Pushpin -->
+            <div class="w-4 h-4 bg-slate-blue rounded-full border border-ink absolute -top-2 left-1/2 -translate-x-1/2 shadow z-10"></div>
+
+            <div class="aspect-video bg-paper border-2 border-ink overflow-hidden relative mb-3">
+              <img 
+                src="mockup1.png" 
+                alt="POMPO AI desktop app with a customizable Pomodoro timer" 
+                class="w-full h-full object-cover"
+                onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full bg-graph-paper p-4 flex flex-col items-center justify-center text-center font-mono text-xs text-slate-blue\'><i data-lucide=\'timer\' class=\'w-8 h-8 text-slate-blue mb-2\'></i><span class=\'font-bold text-ink\'>YOUR FOCUS DESK</span><span>Timers, tasks, themes and progress</span></div>';"
+              />
+            </div>
+            <div class="font-hand text-2xl font-bold text-ink text-center">
+              3. Your Focus Desk
+            </div>
+            <p class="font-mono text-[11px] text-slate-blue text-center mt-1">
+              Custom timers, soothing sound, themes, tasks, goals and progress.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- STUDY PET CHARACTER SELECT -->
+    <section id="characters" class="relative scroll-reveal">
+      <div class="bg-lined-paper border-4 border-ink paper-shadow p-6 md:p-10 relative overflow-hidden">
+        <div class="w-28 h-6 tape-strip absolute -top-3 right-12 rotate-3"></div>
+        <div class="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 items-center">
+          <div class="relative bg-paper-dark border-2 border-ink p-5 md:p-7 min-h-[260px] flex flex-col justify-between overflow-hidden">
+            <div class="absolute inset-0 bg-graph-paper opacity-50"></div>
+            <div class="relative z-10 flex justify-between items-start gap-3">
+              <div>
+                <span class="font-mono text-xs font-bold text-warm-terracotta">THE DESK PET ROSTER</span>
+                <h2 class="font-serif font-black text-3xl md:text-4xl text-ink mt-1">Your study boss awaits.</h2>
+              </div>
+              <span class="stamp-badge px-2 py-1 text-[9px] uppercase font-mono shrink-0">PARODY MODE</span>
+            </div>
+            <div class="relative z-10 flex items-end justify-between mt-4">
+              <div class="max-w-[55%]">
+                <p class="font-hand text-2xl text-slate-blue leading-tight">Make history’s famous dictators dictate your studies.</p>
+                <p class="font-mono text-[11px] text-slate-blue mt-3">A tongue-in-cheek pixel-art pet. Drag it anywhere on your desktop.</p>
+              </div>
+              <img src="dictator.png" alt="Pixel-art parody roster of historical dictator-inspired study pets" class="pixel-art w-40 md:w-56 max-h-36 object-contain relative z-10" loading="lazy">
+            </div>
+          </div>
+
+          <div class="min-w-0">
+            <div class="flex items-end justify-between gap-4 mb-4">
+              <div>
+                <span class="font-mono text-xs font-bold text-slate-blue">CHOOSE YOUR CHARACTER · 1—5</span>
+                <h3 class="font-serif font-black text-2xl text-ink">Pick the boss of your next focus sprint</h3>
+              </div>
+              <span class="font-mono text-[10px] text-slate-blue hidden sm:block">← SCROLL TO SELECT →</span>
+            </div>
+
+            <div class="character-strip flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory" role="group" aria-label="Choose a study pet character">
+              <button type="button" onclick="selectStudyPet(this)" data-name="The Iron Lecturer" data-image="character.png" aria-pressed="true" class="study-pet-choice snap-start shrink-0 w-28 bg-peach-sand border-2 border-ink paper-shadow-sm p-2 text-center transition-transform hover:-translate-y-1 ring-2 ring-warm-terracotta">
+                <img src="character.png" alt="" class="pixel-art w-full h-24 object-contain" loading="lazy">
+                <span class="font-mono text-[10px] font-bold text-ink">01 · LECTURER</span>
+              </button>
+              <button type="button" onclick="selectStudyPet(this)" data-name="The Chairman of Breaks" data-image="character2.png" aria-pressed="false" class="study-pet-choice snap-start shrink-0 w-28 bg-paper-bright border-2 border-ink paper-shadow-sm p-2 text-center transition-transform hover:-translate-y-1">
+                <img src="character2.png" alt="" class="pixel-art w-full h-24 object-contain" loading="lazy">
+                <span class="font-mono text-[10px] font-bold text-ink">02 · CHAIRMAN</span>
+              </button>
+              <button type="button" onclick="selectStudyPet(this)" data-name="The Supreme Scheduler" data-image="character3.png" aria-pressed="false" class="study-pet-choice snap-start shrink-0 w-28 bg-paper-bright border-2 border-ink paper-shadow-sm p-2 text-center transition-transform hover:-translate-y-1">
+                <img src="character3.png" alt="" class="pixel-art w-full h-24 object-contain" loading="lazy">
+                <span class="font-mono text-[10px] font-bold text-ink">03 · SCHEDULER</span>
+              </button>
+              <button type="button" onclick="selectStudyPet(this)" data-name="The Desk Inspector" data-image="character4.png" aria-pressed="false" class="study-pet-choice snap-start shrink-0 w-28 bg-paper-bright border-2 border-ink paper-shadow-sm p-2 text-center transition-transform hover:-translate-y-1">
+                <img src="character4.png" alt="" class="pixel-art w-full h-24 object-contain" loading="lazy">
+                <span class="font-mono text-[10px] font-bold text-ink">04 · INSPECTOR</span>
+              </button>
+              <button type="button" onclick="selectStudyPet(this)" data-name="The Grand Procrastinator" data-image="character5.png" aria-pressed="false" class="study-pet-choice snap-start shrink-0 w-28 bg-paper-bright border-2 border-ink paper-shadow-sm p-2 text-center transition-transform hover:-translate-y-1">
+                <img src="character5.png" alt="" class="pixel-art w-full h-24 object-contain" loading="lazy">
+                <span class="font-mono text-[10px] font-bold text-ink">05 · GRAND BOSS</span>
+              </button>
+            </div>
+            <div class="mt-1 flex items-center gap-3 border-t-2 border-dashed border-slate-blue/30 pt-3">
+              <img id="selected-pet-preview" src="character.png" alt="Selected pixel-art study pet" class="pixel-art w-14 h-14 object-contain bg-paper-bright border border-ink">
+              <div>
+                <span class="font-mono text-[10px] uppercase font-bold text-slate-blue">CURRENTLY SELECTED</span>
+                <p id="selected-pet-name" class="font-serif font-bold text-xl text-ink">The Iron Lecturer</p>
+              </div>
+              <span class="ml-auto font-hand text-xl text-warm-terracotta">Drag me to your desk ↗</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESK PET MOOD PREVIEW -->
+    <section id="pet-moods" class="relative scroll-reveal">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 border-b-4 border-ink pb-4 mb-7">
+        <div>
+          <span class="font-mono text-xs font-bold text-warm-terracotta">PIXEL PET BEHAVIOR // PURE PARODY</span>
+          <h2 class="font-serif font-black text-3xl md:text-4xl text-ink">Interactive desk pets have moods.</h2>
+          <p class="font-mono text-xs text-slate-blue mt-2">Pick a mood to preview your tiny study boss’s desktop antics.</p>
+        </div>
+        <p id="pet-mood-status" class="font-hand text-2xl text-slate-blue" role="status" aria-live="polite">Mood preview: Grumpy</p>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <button type="button" onclick="selectPetMood(this)" data-mood="Grumpy" aria-pressed="true" class="pet-mood-choice text-left bg-peach-sand border-2 border-ink paper-shadow p-3 md:p-4 relative transition-transform hover:-translate-y-1 ring-2 ring-warm-terracotta">
+          <span class="font-mono text-[10px] uppercase font-bold text-slate-blue">MOOD 01</span>
+          <div class="bg-paper-bright border-2 border-ink mt-2 mb-3 aspect-square flex items-center justify-center bg-graph-paper overflow-hidden">
+            <img src="angry.png" alt="Pixel-art study pet looking grumpy" class="pixel-art w-full h-full object-contain" loading="lazy">
+          </div>
+          <span class="font-serif font-bold text-xl text-ink block">Grumpy</span>
+          <span class="font-mono text-[10px] text-slate-blue">The focus inspector has noticed a tab.</span>
+        </button>
+
+        <button type="button" onclick="selectPetMood(this)" data-mood="Tea break" aria-pressed="false" class="pet-mood-choice text-left bg-paper-bright border-2 border-ink paper-shadow p-3 md:p-4 relative transition-transform hover:-translate-y-1">
+          <span class="font-mono text-[10px] uppercase font-bold text-slate-blue">MOOD 02</span>
+          <div class="bg-paper-dark border-2 border-ink mt-2 mb-3 aspect-square flex items-center justify-center bg-graph-paper overflow-hidden">
+            <img src="tea.png" alt="Pixel-art study pet enjoying tea" class="pixel-art w-full h-full object-contain" loading="lazy">
+          </div>
+          <span class="font-serif font-bold text-xl text-ink block">Tea break</span>
+          <span class="font-mono text-[10px] text-slate-blue">Even tiny bosses need a breather.</span>
+        </button>
+
+        <button type="button" onclick="selectPetMood(this)" data-mood="Potty break" aria-pressed="false" class="pet-mood-choice text-left bg-paper-bright border-2 border-ink paper-shadow p-3 md:p-4 relative transition-transform hover:-translate-y-1">
+          <span class="font-mono text-[10px] uppercase font-bold text-slate-blue">MOOD 03</span>
+          <div class="bg-paper-dark border-2 border-ink mt-2 mb-3 aspect-square flex items-center justify-center bg-graph-paper overflow-hidden">
+            <img src="poop.png" alt="Pixel-art study pet taking a bathroom break" class="pixel-art w-full h-full object-contain" loading="lazy">
+          </div>
+          <span class="font-serif font-bold text-xl text-ink block">Potty break</span>
+          <span class="font-mono text-[10px] text-slate-blue">A very official pause in proceedings.</span>
+        </button>
+
+        <button type="button" onclick="selectPetMood(this)" data-mood="Drill-sergeant mode" aria-pressed="false" class="pet-mood-choice text-left bg-paper-bright border-2 border-ink paper-shadow p-3 md:p-4 relative transition-transform hover:-translate-y-1">
+          <span class="font-mono text-[10px] uppercase font-bold text-slate-blue">MOOD 04</span>
+          <div class="bg-paper-bright border-2 border-ink mt-2 mb-3 aspect-square flex items-center justify-center bg-graph-paper overflow-hidden">
+            <img src="shoot.png" alt="Pixel-art parody study pet in an over-the-top drill-sergeant pose" class="pixel-art w-full h-full object-contain" loading="lazy">
+          </div>
+          <span class="font-serif font-bold text-xl text-ink block">Drill-sergeant</span>
+          <span class="font-mono text-[10px] text-slate-blue">All theatrics, no actual orders.</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- CRAFT FEATURES INDEX (STICKY NOTES & CARDS) -->
+    <section id="features" class="relative pt-4 scroll-reveal">
+      
+      <div class="flex items-center justify-between border-b-4 border-ink pb-4 mb-8">
+        <div>
+          <h2 class="font-serif font-black text-3xl md:text-4xl text-ink">THE POMPO AI FOCUS KIT</h2>
+          <p class="font-mono text-xs text-slate-blue">A paper-crafted workspace for focused study sessions</p>
+        </div>
+        <div class="hidden sm:block font-mono text-xs bg-paper-dark px-3 py-1 border border-ink">
+          INDEX CARDS // FEATURES
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Sticky Note 1 -->
+        <div class="bg-peach-sand p-6 border-2 border-ink paper-shadow transform -rotate-1 relative">
+          <div class="w-4 h-4 bg-warm-terracotta rounded-full border border-ink absolute -top-2 left-1/2 -translate-x-1/2 shadow"></div>
+          
+          <span class="font-mono text-xs font-bold text-slate-blue block mb-2">01 // AI FOCUS GUARDIAN</span>
+          <h3 class="font-serif font-bold text-2xl text-ink mb-2">A gentle nudge, right on time</h3>
+          <p class="font-mono text-xs leading-relaxed text-slate-blue">
+            POMPO AI reads focus cues in real time and alerts you when your attention drifts. Analysis runs on your device; your focus data is not sent to the cloud.
+          </p>
+        </div>
+
+        <!-- Sticky Note 2 -->
+        <div class="bg-paper-dark p-6 border-2 border-ink paper-shadow transform rotate-2 relative">
+          <div class="w-3 h-8 bg-paper-bright border border-ink rounded-full absolute -top-3 right-6"></div>
+
+          <span class="font-mono text-xs font-bold text-ink block mb-2">02 // YOUR CUSTOM FOCUS DESK</span>
+          <h3 class="font-serif font-bold text-2xl text-ink mb-2">Set up your own rhythm</h3>
+          <p class="font-mono text-xs leading-relaxed text-slate-blue">
+            Run a classic Pomodoro or set a custom timer. Add soothing background sound, tune themes and opacity, organize a to-do list and goals, then track your progress.
+          </p>
+        </div>
+
+        <!-- Sticky Note 3 -->
+        <div class="bg-paper-bright p-6 border-2 border-ink paper-shadow transform -rotate-2 relative">
+          <span class="font-mono text-xs font-bold text-warm-terracotta block mb-2">03 // DESKTOP STUDY PETS</span>
+          <h3 class="font-serif font-bold text-2xl text-ink mb-2">A tiny boss for your big goals</h3>
+          <p class="font-mono text-xs leading-relaxed text-slate-blue">
+            Choose one of five historical-dictator parodies as your pixel-art study pet. Drag it anywhere on your desktop and let it theatrically supervise your next sprint.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DOWNLOAD CENTER SECTION -->
+    <section id="downloads" class="relative pt-4 scroll-reveal">
+      
+      <div class="mb-8 text-center relative inline-block left-1/2 -translate-x-1/2">
+        <div class="bg-peach-sand px-6 py-2 border-3 border-ink paper-shadow transform -rotate-1 inline-block">
+          <h2 class="font-serif font-black text-3xl md:text-4xl text-ink">DOWNLOAD POMPO AI</h2>
+        </div>
+        <p class="font-mono text-xs uppercase tracking-widest text-slate-blue mt-2 font-bold">
+          [ Direct Downloads // macOS .DMG & Windows .EXE ]
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+
+        <!-- MAC OS DOWNLOAD TICKET -->
+        <div class="bg-lined-paper border-4 border-ink p-6 md:p-8 paper-shadow relative overflow-hidden">
+          <div class="w-24 h-6 tape-strip absolute -top-3 left-8 transform -rotate-6"></div>
+
+          <div class="flex items-start justify-between border-b-2 border-ink pb-4 mb-6">
+            <div>
+              <span class="font-mono text-xs text-slate-blue font-bold block">PLATFORM 01</span>
+              <h3 class="font-serif font-black text-3xl text-ink">macOS Build</h3>
+            </div>
+            <div class="w-12 h-12 bg-paper-dark border-2 border-ink flex items-center justify-center text-2xl font-bold">
+              
+            </div>
+          </div>
+
+          <div class="font-mono text-xs space-y-2 mb-8 bg-paper p-4 border border-ink">
+            <div class="flex justify-between border-b border-slate-blue/20 pb-1">
+              <span class="text-slate-blue">File Name:</span>
+              <span class="font-bold text-ink">Pompo-1.0.0-arm64.dmg</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-blue/20 pb-1">
+              <span class="text-slate-blue">Chip Architecture:</span>
+              <span class="font-bold text-ink">Apple Silicon (ARM64)</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-blue/20 pb-1">
+              <span class="text-slate-blue">File Size:</span>
+              <span class="font-bold text-ink">124 MB</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-blue">Target OS:</span>
+              <span class="font-bold text-ink">macOS 11.0 Big Sur or later</span>
+            </div>
+          </div>
+
+          <button onclick="triggerDownload('macOS', 'Pompo-1.0.0-arm64.dmg')" class="btn-tactile w-full bg-slate-blue text-white font-mono font-bold text-sm py-4 border-2 border-ink paper-shadow-sm flex items-center justify-center gap-3 hover:bg-ink">
+            <i data-lucide="download" class="w-5 h-5"></i>
+            <span>DOWNLOAD FOR MAC (.DMG)</span>
+          </button>
+        </div>
+
+        <!-- WINDOWS DOWNLOAD TICKET -->
+        <div class="bg-lined-paper border-4 border-ink p-6 md:p-8 paper-shadow relative overflow-hidden">
+          <div class="w-24 h-6 tape-strip absolute -top-3 right-8 transform rotate-3"></div>
+
+          <div class="flex items-start justify-between border-b-2 border-ink pb-4 mb-6">
+            <div>
+              <span class="font-mono text-xs text-warm-terracotta font-bold block">PLATFORM 02</span>
+              <h3 class="font-serif font-black text-3xl text-ink">Windows Build</h3>
+            </div>
+            <div class="w-12 h-12 bg-paper-dark border-2 border-ink flex items-center justify-center text-2xl font-bold">
+              ⊞
+            </div>
+          </div>
+
+          <div class="font-mono text-xs space-y-2 mb-8 bg-paper p-4 border border-ink">
+            <div class="flex justify-between border-b border-slate-blue/20 pb-1">
+              <span class="text-slate-blue">File Name:</span>
+              <span class="font-bold text-ink">Pompo.exe</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-blue/20 pb-1">
+              <span class="text-slate-blue">Architecture:</span>
+              <span class="font-bold text-ink">Windows x64 Standalone</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-blue/20 pb-1">
+              <span class="text-slate-blue">File Size:</span>
+              <span class="font-bold text-ink">221 MB</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-blue">Target OS:</span>
+              <span class="font-bold text-ink">Windows 10 / 11 (64-bit)</span>
+            </div>
+          </div>
+
+          <button onclick="triggerDownload('Windows', 'Pompo.exe')" class="btn-tactile w-full bg-warm-terracotta text-white font-mono font-bold text-sm py-4 border-2 border-ink paper-shadow-sm flex items-center justify-center gap-3 hover:bg-ink">
+            <i data-lucide="download" class="w-5 h-5"></i>
+            <span>DOWNLOAD FOR WINDOWS (.EXE)</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DOWNLOAD RECEIPT MODAL -->
+  <div id="download-modal" class="fixed inset-0 bg-ink/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-lined-paper max-w-md w-full border-4 border-ink p-6 md:p-8 paper-shadow relative transform rotate-1">
+      
+      <div class="w-28 h-6 tape-strip absolute -top-3 left-1/2 -translate-x-1/2"></div>
+
+      <div class="stamp-badge absolute top-6 right-6 px-3 py-1 font-mono text-xs uppercase">
+        VERIFIED RELEASE
+      </div>
+
+      <div class="font-mono text-xs text-slate-blue mb-2 font-bold">POMPO AI DISTRIBUTION RECEIPT</div>
+      <h3 id="modal-title" class="font-serif font-black text-3xl text-ink mb-4">Downloading POMPO AI...</h3>
+
+      <p class="font-mono text-xs leading-relaxed text-slate-blue mb-6">
+        Your download for <span id="modal-file-name" class="font-bold text-ink bg-peach-sand px-1">Pompo-1.0.0-arm64.dmg</span> has started. Open the downloaded installer to install POMPO AI.
+      </p>
+
+      <div class="bg-paper p-4 border border-ink font-mono text-xs space-y-2 mb-6">
+        <div class="font-bold text-ink border-b border-slate-blue/20 pb-1">INSTALLATION STEPS:</div>
+        <div class="flex items-start gap-2">
+          <span>1.</span>
+          <span>Open downloaded artifact file.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span>2.</span>
+          <span>Move POMPO AI to your Applications folder, or run the Windows installer.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span>3.</span>
+          <span>Launch POMPO AI and start a focus cycle!</span>
+        </div>
+      </div>
+
+      <button onclick="closeModal()" class="btn-tactile w-full bg-ink text-paper-bright font-mono font-bold text-xs py-3 border-2 border-ink hover:bg-slate-blue">
+        CLOSE RECEIPT
+      </button>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="mt-20 border-t-4 border-ink bg-paper-dark py-8 px-4 font-mono text-xs text-slate-blue text-center">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 bg-paper-bright border border-ink flex items-center justify-center overflow-hidden p-0.5">
+          <img src="logo.png" alt="POMPO AI" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'font-serif font-bold text-xs text-warm-terracotta\'>P</span>';">
+        </div>
+        <span class="font-bold text-ink">POMPO AI FOCUS COMPANION © 2026</span>
+      </div>
+      <div>
+        <span>CRAFTED PAPER THEME // ALL RIGHTS RESERVED</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Page load initializations
+    window.onload = function() {
+      lucide.createIcons();
+      initDraggables();
+      initScrollAnimations();
+      checkMobileDevice();
+    };
+
+    // Mobile viewport detection logic
+    function checkMobileDevice() {
+      if (window.innerWidth <= 768) {
+        document.getElementById('mobile-notice-modal').classList.remove('hidden');
+      }
+    }
+
+    function dismissMobileNotice() {
+      document.getElementById('mobile-notice-modal').classList.add('hidden');
+    }
+
+    function selectStudyPet(button) {
+      document.querySelectorAll('.study-pet-choice').forEach(choice => {
+        choice.setAttribute('aria-pressed', 'false');
+        choice.classList.remove('bg-peach-sand', 'ring-2', 'ring-warm-terracotta');
+        choice.classList.add('bg-paper-bright');
+      });
+
+      button.setAttribute('aria-pressed', 'true');
+      button.classList.remove('bg-paper-bright');
+      button.classList.add('bg-peach-sand', 'ring-2', 'ring-warm-terracotta');
+      document.getElementById('selected-pet-preview').src = button.dataset.image;
+      document.getElementById('selected-pet-name').textContent = button.dataset.name;
+    }
+
+    function selectPetMood(button) {
+      document.querySelectorAll('.pet-mood-choice').forEach(choice => {
+        choice.setAttribute('aria-pressed', 'false');
+        choice.classList.remove('bg-peach-sand', 'ring-2', 'ring-warm-terracotta');
+        choice.classList.add('bg-paper-bright');
+      });
+
+      button.setAttribute('aria-pressed', 'true');
+      button.classList.remove('bg-paper-bright');
+      button.classList.add('bg-peach-sand', 'ring-2', 'ring-warm-terracotta');
+      document.getElementById('pet-mood-status').textContent = `Mood preview: ${button.dataset.mood}`;
+    }
+
+    // Scroll Reveal Intersection Observer Animations
+    function initScrollAnimations() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      });
+
+      document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+    }
+
+    // Download Modal Trigger
+    function triggerDownload(platform, filename) {
+      document.getElementById('modal-title').textContent = `Downloading for ${platform}`;
+      document.getElementById('modal-file-name').textContent = filename;
+      
+      const modal = document.getElementById('download-modal');
+      modal.classList.remove('hidden');
+
+      // Download the real installer attached to the latest published GitHub release.
+      const a = document.createElement('a');
+      a.href = `https://github.com/surendar-sketch/pompov1-installer/releases/latest/download/${encodeURIComponent(filename)}`;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function closeModal() {
+      document.getElementById('download-modal').classList.add('hidden');
+    }
+
+    // Draggable Stickers function
+    function initDraggables() {
+      const draggables = document.querySelectorAll('.draggable-item');
+      
+      draggables.forEach(item => {
+        let active = false;
+        let currentX, currentY, initialX, initialY;
+        let xOffset = 0, yOffset = 0;
+
+        item.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+
+        item.addEventListener('touchstart', dragStart, {passive: true});
+        document.addEventListener('touchmove', drag, {passive: false});
+        document.addEventListener('touchend', dragEnd);
+
+        function dragStart(e) {
+          const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+          const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+
+          initialX = clientX - xOffset;
+          initialY = clientY - yOffset;
+          if (e.target === item || item.contains(e.target)) {
+            active = true;
+          }
+        }
+
+        function drag(e) {
+          if (active) {
+            if (e.type === "touchmove") e.preventDefault();
+            const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+
+            currentX = clientX - initialX;
+            currentY = clientY - initialY;
+            xOffset = currentX;
+            yOffset = currentY;
+            item.style.transform = `translate3d(${currentX}px, ${currentY}px, 0px) rotate(4deg)`;
+          }
+        }
+
+        function dragEnd() {
+          initialX = currentX;
+          initialY = currentY;
+          active = false;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
